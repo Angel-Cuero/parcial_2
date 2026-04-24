@@ -132,12 +132,9 @@ class EstablecimientosService {
     }
   }
 
-  /// POST /establecimiento-update/{id} — editar (Laravel Method Spoofing)
+  /// POST /establecimiento-update/{id} — editar
   ///
-  /// Aunque el método lógico es PUT, la petición física debe ser un POST
-  /// (la mayoría de servidores no procesan archivos multipart/form-data a través
-  /// de un PUT real). Se incluye el campo _method=PUT en el body del formulario
-  /// para que Laravel lo reconozca como una actualización.
+  /// La ruta del backend acepta POST directamente (sin _method spoofing).
   Future<Establecimiento> update({
     required int id,
     required String nombre,
@@ -147,7 +144,6 @@ class EstablecimientosService {
     File? logo,
   }) async {
     final fields = <String, dynamic>{
-      '_method': 'PUT', // Laravel method spoofing
       'nombre': nombre,
       'nit': nit,
       'direccion': direccion,

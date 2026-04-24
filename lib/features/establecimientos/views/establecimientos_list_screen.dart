@@ -30,7 +30,7 @@ class _EstablecimientosListScreenState
     _load();
   }
 
-  Future<void> _load() async {
+  Future<void> _load({bool retry = true}) async {
     setState(() => _state = _LoadState.loading);
     try {
       final list = await _service.getAll();
@@ -39,6 +39,14 @@ class _EstablecimientosListScreenState
         _state = _LoadState.success;
       });
     } on DioException catch (e) {
+      // Retry once on timeout / connection error before showing the error UI
+      if (retry &&
+          (e.type == DioExceptionType.connectionTimeout ||
+              e.type == DioExceptionType.receiveTimeout ||
+              e.type == DioExceptionType.connectionError)) {
+        await Future.delayed(const Duration(seconds: 2));
+        return _load(retry: false);
+      }
       final statusCode = e.response?.statusCode;
       final responseData = e.response?.data;
       setState(() {
